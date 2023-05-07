@@ -12,6 +12,10 @@
 <body>
     <div class="container mt-4">
         <h1 class="display-4 text-center"> <i class="fa-solid fa-book-bookmark"></i> Emmys<span class="text-primary">Book</span>List</h1>
+        <div class="input-group input-group-sm mb-3" id="search-container">
+            <span class="input-group-text btn-secondary text-light pe-none" id="">Search</span>
+            <input type="text" class="form-control" id="filter" placeholder="Search By Title...">
+        </div>
         <form id="book-form">
             <div class="form-group mb-4">
                 <label for="title">Book Title</label>
@@ -33,6 +37,7 @@
         <table class="table table-striped mt-5">
             <thead>
                 <tr>
+                    <th>S/N</th>
                     <th>Book Title</th>
                     <th>Book Author</th>
                     <th>Book ISBN</th>

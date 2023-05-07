@@ -10,45 +10,54 @@ class Book{
 
 //UI Class: Handle UI Tasks
 class UI{
-    static displayBooks(){
+    static displayBooks() {
         const books = Store.getBooks();
         //Looping through all the books in array then call add method to list
-        books.forEach((book)=>{
-            UI.addBookToList(book); //calling method
+        books.forEach((book, index) => {
+          UI.addBookToList(book, index + 1); //calling method
         });
-    }
+      }
     
-    static addBookToList(book){
-        const list = document.querySelector('#book-list');
-
-        const row = document.createElement('tr');
+      static addBookToList(book) {
+        const list = document.querySelector("#book-list");
+    
+        const row = document.createElement("tr");
         row.innerHTML = `
-        <td>${book.title}</td>
-        <td>${book.author}</td>
-        <td>${book.ISBN}</td>
-        <td><a href="#" class="btn btn-warning btn-sm"><i class='bx bxs-trash delete'></i></a></td>
-        `;
-
+            <td>${list.children.length + 1}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.ISBN}</td>
+            <td><a href="#" class="btn btn-warning btn-sm"><i class='bx bxs-trash delete'></i></a></td>
+            `;
+    
+            
         list.appendChild(row);
-    }
+        
+      }
     //method to delete a book entry
     static deleteBook(target){ //target is a random name to represent parameter(it could be any other name)
         if(target.classList.contains('delete')){
            if(window.confirm('Are you sure you want to delete this entry?')){
                 const DelRow = target.parentElement.parentElement.parentElement; //gets the entire row
                 DelRow.remove(); //deletes the row
-                const DelRowTitle = DelRow.children[0].textContent; //gets title of row to be deleted
-            UI.showAlert(`"${DelRowTitle}" has been removed 💨 `, 'danger'); //displays title in delete message
+                const DelRowTitle = DelRow.children[1].textContent; //gets title of row to be deleted
+            UI.showAlert(`"${DelRowTitle}" has been removed 🗑 `, 'danger'); //displays title in delete message
+             // Update the s/n field for each row after a deletion occurs
+             const rows = document.querySelectorAll('#book-list tr');
+             rows.forEach((row, index) => {
+                 row.querySelector('td:first-child').textContent = index + 1;
+             });
            }
         }
     }
+    //method to show UI alerts(Delete alert, add alert, etc)
     static showAlert(message, className){
         const div  = document.createElement('div'); //creating message div
         div.className = `alert alert-${className}`; //assigning className
         div.appendChild(document.createTextNode(message)); //Appending message Text to the div
         const container = document.querySelector('.container');
-        const form = document.querySelector('#book-form');
-        container.insertBefore(div, form); //container(parentElement), we insert div before form in container
+        const searchContainer = document.querySelector('#search-container');
+        container.insertBefore(div, searchContainer); //container(parentElement), we insert div before form in container
         //Disappear after 3.5 seconds
         //set timeout takes a function as first param and the time in milliseconds as second param
         setTimeout(()=> document.querySelector('.alert').remove(), 3000);    
@@ -58,6 +67,30 @@ class UI{
         document.querySelector('#title').value ='';
         document.querySelector('#author').value ='';
         document.querySelector('#isbn').value ='';
+    }
+    //method to filter search 
+    static filterItems(e){
+        //convert text to lowercase
+        var text = e.target.value.toLowerCase();
+        //getting list
+        const List = document.querySelector('#book-list');
+        const items = List.querySelectorAll('tr');
+
+        //looping through
+        items.forEach((item)=>{
+            //GETS US THE FIRST Element child of each list item (which is the td)
+            const itemName = item.children[1].innerText; 
+            console.log(itemName.toLowerCase().indexOf(text));
+             
+            //testing to see if they match 
+            if (itemName.toLowerCase().indexOf(text) != -1){
+                item.style.display = 'table-row';  //if match display
+            } else{
+                item.style.display = 'none'; //no match; no display
+            }
+        })
+    
+    
     }
     
 }
@@ -137,3 +170,7 @@ document.querySelector('#book-list').addEventListener('click', (e)=>{
     //Remove book from LocaleStorage
     Store.removeBook(e.target.parentElement.parentElement.previousElementSibling.textContent);
 })
+
+
+//Event: Filter Search Query
+document.querySelector('#filter').addEventListener('keyup', UI.filterItems);
